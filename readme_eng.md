@@ -8,7 +8,7 @@ This is a Weight Lifting Challenge app using Machine Learning.
 
 
 <img src="/for_readme/images/main_concept.png"  width="700">
-<p>Currently, the app implements the following movements:</p>
+<p>Currently, the app implements the following actions:</p>
 <img src="/for_readme/images/mlift_overall.png"  width="700">
 
 ## Configuration
