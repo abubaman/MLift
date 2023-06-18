@@ -3,9 +3,11 @@
 Machine Learning을 이용한 Weight Lifting Challenge 앱입니다.
 
 ## 개요
+아래 그림과 같이 카메라를 통해 사용자의 동작(현재는 스쿼트만 인식 가능)하고 이를 통해 Challenge(몇 일 동안, 하루에 몇 개의 스쿼트를 할 것인지)를 진행하는 앱입니다.
 <img src="/for_readme/images/main_concept.png"  width="700">
 
-<img src="/for_readme/images/main_c.png"  width="700">
+현재 아래와 같은 동작의 구현이 되어 있습니다.
+<img src="/for_readme/images/mlift_overall.png"  width="700">
 
 
 ## 구성
