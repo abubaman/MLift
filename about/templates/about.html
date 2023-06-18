@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+{% endblock %}
+{% block title %}
+<title>MLift - My Page</title>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">About</h4>
+								</div>
+								<div class="card-body">
+										<div class="col-12">
+											<h4 class="mb-1">MLift</h4>
+											<p>Machine Learning을 이용한 Weight Lifting Challenge 앱입니다.</p>
+											<h4 class="mb-1">개요</h4>
+											<p>OpenCV를 활용한 스쿼트 측정이 가능합니다.</p>
+											
+										</div>
+										
+										<div class="col-12">
+													<button type="button" class="btn btn-secondary btn-block btn-lg" onclick="location.href='/accounts/userinfo/'">확인</button>
+										</div>
+	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+
+{% else %}
+	<div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">My Page</h4>
+								</div>
+								<div class="card-body">
+										<div class="col-12">
+											<h4 class="mb-1">Login</h4>
+											<p>로그인 후 이용하여 주시기 바랍니다..<br>
+											
+										</div>
+										<div class="col-12">
+													<button type="button" class="btn btn-secondary btn-block btn-lg" onclick="location.href='/accounts/userinfo/'">확인</button>
+										</div>
+	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+{% endif %}
+{% endblock %}

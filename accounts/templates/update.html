@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/password_eye.css' %}">
+{% endblock %}
+{% block title %}
+<title>MLift - Update</title>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">사용자 정보</h4>
+								</div>
+								<div class="card-body">
+										
+										<form class="nobottommargin" method="POST" action="">
+											{% csrf_token %}
+											<div class="row">
+												<!--<div class="col-12 mb-2">
+												<h4 class="mb-0">기본 정보</h4>
+												</div>-->
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">ID<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ username }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">운동 종류<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="스쿼트" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">챌린지 시작일<small class="text-danger">*</small></label>
+													{{ form.clg_start }}
+												</div>
+												
+												<div class="col-12 bottommargin-sm" disabled/>
+													<label for="template-contactform-name">챌린지 종료일<small class="text-danger">*</small></label>
+													{{ form.clg_end }}
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">챌린지 목표<small class="text-danger">*</small></label>
+													{{ form.clg_type }}
+												</div>												
+
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">반복 시작 횟수<small class="text-danger">*</small></label>
+													{{ form.clg_iter }}
+												</div>															
+												
+
+
+												<div class="divider divider-short divider-center mt-1 mb-3"><i class="icon-clock"></i></div>
+
+
+												<!--<div class="col-12 mb-2">
+												<h4 class="mb-0">메뉴 옵션</h4>
+												</div>-->										
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">알림 여부<small class="text-danger">*</small></label>
+													{{ form.noti_bool }}
+												</div>
+												
+												<div class="col-12 bottommargin-sm" id="like">
+													<label for="template-contactform-name">알림 시각<small class="text-danger">*</small></label>
+													{{ form.noti_time }}
+												</div>
+												
+												<div class="divider divider-short divider-center mt-1 mb-3"><i class="icon-info"></i></div>
+
+
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">성별<small class="text-danger">*</small></label>
+													{{ form.user_gender }}
+												</div>
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">키(cm)<small class="text-danger">*</small></label>
+													{{ form.user_height }}
+												</div>													
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">몸무게(kg)<small class="text-danger">*</small></label>
+													{{ form.user_weight }}
+												</div>																
+												
+												
+												
+												<div class="col-12">
+													<button type="submit" class="btn btn-secondary btn-block btn-lg">적용</input>
+													<button type="button" class="btn btn-secondary btn-block btn-lg" onclick="location.href='/accounts/userinfo/'">취소</button>
+												</div>
+
+											</div>
+
+
+										</form>
+	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+	
+<!-- Jquery Script -->
+	<script>
+	// for document loading
+	$(document).ready(function(){
+		// for meal option
+		var meal_option = $("#meal_option option:selected").val();
+		if(meal_option == "Custom"){
+			$("#like").show();
+			$("#dislike").show();
+		}
+		else{
+			$("#like").hide();
+			$("#dislike").hide();
+		}
+		// for grc_pass visibility(let it change to password type)
+		$("#grc_pass").attr("type","password");
+				
+	});
+	
+	// change visibility by meal option select
+	$("#meal_option").change(function() {
+		var meal_option = $("#meal_option option:selected").val();
+		console.log(meal_option)
+		if(meal_option == "Custom"){
+			$("#like").show();
+			$("#dislike").show();
+		}
+		else{
+			$("#like").hide();
+			$("#dislike").hide();
+		}		
+	});
+	
+	// grc_pass visibility change by checkbox
+	$("#grc_pass_toggle").change(function() {
+		var checked = $("#grc_pass_toggle").is(':checked');
+		if(checked){
+			$("#grc_pass").attr("type","text");
+		}
+		else{
+			$("#grc_pass").attr("type","password");
+		}		
+	});
+	
+  	</script>
+{% else %}
+	<p> {{ login }} </p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+{% endblock %}
+{% block title %}
+<title>GRSalad - About</title>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">My QR Code</h4>
+								</div>
+								<div class="card-body">
+										<div class="col-12">
+											<h4 class="mb-1 row justify-content-center">{{ username }}</h4>
+			
+											<p class = "row justify-content-center"><img src="{% get_static_prefix %}qrcode/{{ username }}.png" width="90%" style="display:inline; margin:0px 0px 0px 0px; !important"></p>
+
+										</div>
+
+	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+{% endblock %}
+{% block title %}
+<title>MLift - My Page</title>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="content-wrap bg-light">
+
+				<div class="container">
+
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">{{ username }}님 환영합니다.</h4>
+								</div>
+								<div class="card-body">
+
+									<div class="form-widget">
+
+										<div class="form-result"></div>
+
+										<div class="form-process css3-spinner">
+											<div class="css3-spinner-double-bounce1"></div>
+											<div class="css3-spinner-double-bounce2"></div>
+										</div>
+
+										<form class="nobottommargin" id="template-contactform" name="template-contactform" action="include/form.php" method="post" enctype="multipart/form-data">
+
+											<div class="row">
+												<div class="col-12 mb-2">
+												<h4 class="mb-4 row justify-content-center">{{ clg_type }}일 챌린지 중 {{ calorie }}일을 달성했습니다!</h4>
+												</div>
+												{% if accum_point < 20 %}
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name" class="row justify-content-center">Level 1 : 초초보</label>
+													<p class = "row justify-content-center"><img src="{% get_static_prefix %}/images/level/lv01.png" width="50%" style="display:inline; margin:0px 0px 0px 0px; !important"></p>
+												</div>
+												{% else %}
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name" class="row justify-content-center">Level 2 : 초보</label>
+													<p class = "row justify-content-center"><img src="{% get_static_prefix %}/images/level/lv02.png" width="50%" style="display:inline; margin:0px 0px 0px 0px; !important"></p>
+												</div>
+												{% endif %}
+												
+												<div class="col-12 mb-0">
+													<label for="template-contactform-name">최근 얻은 포인트 : {{ get_point }}</label>
+												</div>
+												<div class="col-12 mb-1">
+													<label for="template-contactform-name">총 누적 포인트 : {{ accum_point }}</label>
+												</div>
+
+											</div>
+
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+<!-- Jquery Script -->
+	<script>
+	$(document).ready(function(){
+		var meal_option = $('#meal_option').val();
+		if(meal_option == "사용자 지정 메뉴"){
+			$("#like").show();
+			$("#dislike").show();
+		}
+		else{
+			$("#like").hide();
+			$("#dislike").hide();
+		}		
+	});
+  	</script>
+	
+{% else %}
+	<p> {{ login }} </p>
+{% endif %}
+{% endblock %}

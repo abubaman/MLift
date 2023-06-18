@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+{% endblock %}
+{% block title %}
+<title>MLift - Userinfo</title>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+	<div class="content-wrap bg-light">
+
+				<div class="container">
+
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">사용자 정보</h4>
+								</div>
+								<div class="card-body">
+
+									<div class="form-widget">
+
+										<div class="form-result"></div>
+
+										<div class="form-process css3-spinner">
+											<div class="css3-spinner-double-bounce1"></div>
+											<div class="css3-spinner-double-bounce2"></div>
+										</div>
+
+										<form class="nobottommargin" id="template-contactform" name="template-contactform" action="include/form.php" method="post" enctype="multipart/form-data">
+
+											<div class="row">
+												<!--<div class="col-12 mb-2">
+												<h4 class="mb-0">기본 정보</h4>
+												</div>-->
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">ID<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ username }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">운동 종류<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="스쿼트" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">챌린지 시작일<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ clg_start }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">챌린지 종료일<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ clg_end }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">챌린지 목표<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ clg_type_text }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">반복 시작 횟수<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ clg_iter_text }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+
+												<div class="divider divider-short divider-center mt-1 mb-3"><i class="icon-clock"></i></div>
+												
+												<!--<div class="col-12 mb-2">
+												<h4 class="mb-0">메뉴 옵션</h4>
+												</div>-->
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">알림 여부<small class="text-danger">*</small></label>
+													<input  id="meal_option" type="text" name="template-contactform-name" value="{{ noti_bool_text }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">알림 시각<small class="text-danger">*</small></label>
+													<input  id="meal_option" type="text" name="template-contactform-name" value="{{ noti_time_text }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>
+												
+												<!--<div id = "like" class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">선호 단어<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ grc_meal_like }}" class="form-control required" placeholder="단어 입력되지 않음" disabled/>
+												</div>
+												<div id = "dislike" class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">비선호 단어<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ grc_meal_dislike }}" class="form-control required" placeholder="단어 입력되지 않음" disabled/>
+												</div>-->
+												
+												<div class="divider divider-short divider-center mt-1 mb-3"><i class="icon-info"></i></div>
+												
+												<!--<div class="col-12 mb-2">
+												<h4 class="mb-0">알림 옵션</h4>
+												</div>-->
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">성별<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ user_gender_text }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>												
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">키(cm)<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ user_height }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>				
+												<div class="col-12 bottommargin-sm">
+													<label for="template-contactform-name">몸무게(kg)<small class="text-danger">*</small></label>
+													<input type="text" id="template-contactform-name" name="template-contactform-name" value="{{ user_weight }}" class="form-control required" placeholder="Enter your Full Name" disabled/>
+												</div>				
+												
+												
+												<div class="col-12">
+													<button type="button" name="template-contactform-submit" class="btn btn-secondary btn-block btn-lg" onclick="location.href='/accounts/update/'">챌린지 정보 업데이트</button>
+												</div>
+
+												<input type="hidden" name="prefix" value="template-contactform-">
+
+											</div>
+
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+<!-- Jquery Script -->
+	<script>
+	$(document).ready(function(){
+		var meal_option = $('#meal_option').val();
+		if(meal_option == "사용자 지정 메뉴"){
+			$("#like").show();
+			$("#dislike").show();
+		}
+		else{
+			$("#like").hide();
+			$("#dislike").hide();
+		}		
+	});
+  	</script>
+	
+{% else %}
+	<p> {{ login }} </p>
+{% endif %}
+{% endblock %}
