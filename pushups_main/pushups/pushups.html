@@ -1,0 +1,281 @@
+<html>
+    <head>
+      <link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+      <link rel="stylesheet" href="./static/css/bootstrap.css" type="text/css" />
+      <link rel="stylesheet" href="./static/style.css" type="text/css" />
+      <link rel="stylesheet" href="./static/css/dark.css" type="text/css" />
+      <link rel="stylesheet" href="./static/css/font-icons.css" type="text/css" />
+      <link rel="stylesheet" href="./static/css/animate.css" type="text/css" />
+      <link rel="stylesheet" href="./static/css/magnific-popup.css" type="text/css" />
+      
+      <!-- Bootstrap Switch CSS -->
+      <link rel="stylesheet" href="./static/css/components/bs-switches.css" type="text/css" />
+      <!--Bootstrap Select CSS -->
+      <link rel="stylesheet" href="./static/css/components/bs-select.css" type="text/css" />
+      <link rel="stylesheet" href="./static/css/components/select-boxes.css" type="text/css" />
+      
+      <link rel="stylesheet" href="./static/css/responsive.css" type="text/css" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <style>
+        .container {max-width : 1400px;}
+      </style>
+
+    </head>
+
+    <body>
+      <div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">MLift Main Application</h4>
+								</div>
+								<div class="card-body">
+										<div class="col-12">
+                      <h4 class="row justify-content-center mb-1" id="login">QR Code로 로그인해 주세요.</h4>
+                      <div class="col-12 gx-5 row justify-content-center">
+                        <button type="button" class="col-sm-2 btn btn-secondary btn-sm" onclick="init()">시작</button>
+                        <button type="button" class="col-sm-2 btn btn-secondary btn-sm" onclick="stopPose()">정지</button>
+                      </div>
+
+
+                        <h3 class="row justify-content-center mb-1" id="countcontainer">0개</h3>
+                        <div class="row justify-content-center mb-1" id="label-container"></div>
+
+                        <div class="row justify-content-center" id="canvas-container"><canvas id="canvas"></canvas></div>
+                    
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/pose
+
+        // the link to your model provided by Teachable Machine export panel
+        const URL = "./model_squat/";
+        let model, webcam, ctx, labelContainer, maxPredictions;
+        var idle = 0;
+        var pushup = 0;
+        var count = 0;
+        
+        var threshold = 5;
+        var finish_noti = 0;
+        username_list = [];
+        threshold_list = [];
+
+        
+        $( document ).ready(function() {
+          console.log( "ready!" );
+
+          // API에 Get으로 접근해서 username, threshold list 가져옴
+          fetch('http://lift.abuba.kr/accounts/api/user/')
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data);
+              for (idx in data){
+                // console.log(idx);
+                // console.log(data[idx]);
+                // console.log(data[idx]['username']);
+                username_list.push(data[idx]['username'])
+                threshold_list.push(data[idx]['clg_iter'])
+              };
+              // console.log(username_list)
+              //console.log(data[0]['username']);
+              if(data[0]['attend']==1){ // 만약 abubaman의 attend가 1이라면
+                console.log("Start");
+                login.innerText = username_list[0]+"으로 로그인 되었습니다.";
+              }
+            });
+            console.log( "ready!2" );
+        });
+
+
+
+
+        async function init() {
+            username_list = [];
+            finish_noti = 0;
+
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // load the model and metadata
+            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+            // Note: the pose library adds a tmPose object to your window (window.tmPose)
+            model = await tmPose.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Convenience function to setup a webcam
+            const size_x = 640;
+            const size_y = 640;
+            const flip = true; // whether to flip the webcam
+            webcam = new tmPose.Webcam(size_x, size_y, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // append/get elements to the DOM
+            const canvas = document.getElementById("canvas");
+            canvas.width = size_x; canvas.height = size_y;
+            ctx = canvas.getContext("2d");
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+                //console.log('abubaman');
+            }
+
+
+            // API에 Get으로 접근해서 username list 가져옴
+            fetch('http://lift.abuba.kr/accounts/api/user/')
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data);
+              for (idx in data){
+                // console.log(idx);
+                // console.log(data[idx]);
+                // console.log(data[idx]['username']);
+                username_list.push(data[idx]['username'])
+              };
+              // console.log(username_list)
+              //console.log(data[0]['username']);
+              if(data[0]['attend']==1){ // 만약 abubaman의 attend가 1이라면
+                console.log("Start");
+                login.innerText = threshold_list[0]+"개 목표!";
+              }
+            });
+
+        }
+
+        async function loop(timestamp) {
+            webcam.update(); // update the webcam frame
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+
+            // Prediction #1: run input through posenet
+            // estimatePose can take in an image, video or canvas html element
+            const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+            // Prediction 2: run input through teachable machine classification model
+            const prediction = await model.predict(posenetOutput);
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+
+                //여기부터 내 코드. 팔굽혀펴기 판단 위함.
+                old = prediction[1].probability;// 예전 값을 저장하고,
+                //console.log(old)
+                // sleep(10000)
+                //   .then(() => countPushUp())
+                //   .then(() => console.log("after"+prediction[1].probability));
+                // if(old<prediction[1].probability && prediction[1].probability>0.8){
+                if(prediction[0].probability>0.8){//idle시에 idle을 계속 더함
+                  idle = idle + 0.1;
+                  pushup = 0;
+                }
+
+                if(prediction[1].probability>0.8){//pushup시에 pushup을 계속 더함
+                  pushup = pushup + 0.1;
+                  
+                  if(idle>2){//idle이 2초를 넘어섰고
+                    if(pushup>2){//pushup도 2초를 넘었으면
+                      count = count+1;//count를 늘려라
+                      console.log(count);
+                      countcontainer.innerText = String(count) + "개";
+                    }
+                  }
+                  if(pushup>2){//pushup이 2초를 넘었으면, idle은 다시 0으로 만들어라
+                    idle = 0;
+                  }
+
+                }
+                
+                //PUT으로 success_fail 1이 되도록 요청하기
+                if(count>=threshold && finish_noti==0){//count가 기준을 넘었다면 && 알림을 하지 않았다면
+                
+                  fetch("http://lift.abuba.kr/accounts/api/user/abubaman", {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    success_fail : '1',
+                  }),
+                  })
+                  .then((response) => {response.json(); 
+                  //  console.log(response.json());
+                  })
+                  .then((data) => {
+                    console.log(data);
+                    console.log("Finish");
+                    login.innerText = "목표를 달성하였습니다!!";
+                  })
+                
+                  finish_noti=1;
+                  stopPose();
+                }
+
+                //console.log(idle, pushup);
+                //console.log(i);
+                //console.log(prediction[i].className)
+                //console.log(prediction[i].probability)
+            }
+
+            // finally draw the poses
+            drawPose(pose);
+        }
+
+        function drawPose(pose) {
+            if (webcam.canvas) {
+                ctx.drawImage(webcam.canvas, 0, 0);
+                // draw the keypoints and skeleton
+                if (pose) {
+                    const minPartConfidence = 0.5;
+                    tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
+                    tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
+                }
+            }
+        }
+        function stopPose() {
+            webcam.stop();
+            webcam.exit();
+        }
+        
+        async function countPushUp() {
+          const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
+          const prediction = await model.predict(posenetOutput);
+          old = prediction[1].probability;
+          console.log("before"+old)
+          return old;
+        
+        }
+        
+        function sleep(ms) {
+          return new Promise((r) => setTimeout(r, ms));
+        }
+
+        
+  
+    
+        
+    </script>
+
+    </body>
+</html>

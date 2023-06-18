@@ -1,0 +1,186 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SNU Lift Login</title>
+  <script src="./jsQR.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i,700|Raleway:300,400,500,600,700|Crete+Round:400i" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="./static/css/bootstrap.css" type="text/css" />
+	<link rel="stylesheet" href="./static/style.css" type="text/css" />
+	<link rel="stylesheet" href="./static/css/dark.css" type="text/css" />
+	<link rel="stylesheet" href="./static/css/font-icons.css" type="text/css" />
+	<link rel="stylesheet" href="./static/css/animate.css" type="text/css" />
+	<link rel="stylesheet" href="./static/css/magnific-popup.css" type="text/css" />
+	
+	<!-- Bootstrap Switch CSS -->
+	<link rel="stylesheet" href="./static/css/components/bs-switches.css" type="text/css" />
+	<!--Bootstrap Select CSS -->
+	<link rel="stylesheet" href="./static/css/components/bs-select.css" type="text/css" />
+	<link rel="stylesheet" href="./static/css/components/select-boxes.css" type="text/css" />
+	
+	<link rel="stylesheet" href="./static/css/responsive.css" type="text/css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    .container {max-width : 1400px;}
+  </style>
+
+
+</head>
+
+
+
+
+<body>
+<div class="content-wrap bg-light">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-lg-7 col-md-10">
+							<div class="card shadow-sm">
+								<div class="card-header">
+									<h4 class="mb-0">MLift Login</h4>
+								</div>
+								<div class="card-body">
+										<div class="col-12">
+											<h4 class="row justify-content-center mb-1" id="login">QR Code로 로그인해 주세요.</h4>
+
+                        <div class = "row justify-content-center" id="loadingMessage">Unable to access video stream (please make sure you have a webcam enabled)</div>
+                        <canvas class = "row justify-content-center" id="canvas" hidden></canvas>
+                        <div class = "row justify-content-center" id="output" hidden>
+                          <div id="outputMessage"></div>
+                          <div hidden><b>Data:</b> <span id="outputData"></span></div>
+                          <div id="login"><br></div>
+                        </div>
+																			
+										<div class="col-12">
+													<button type="button" class="btn btn-secondary btn-block btn-lg" onclick="location.href='http://127.0.0.1:5500/pushups/pushups.html'">확인</button>
+										</div>
+	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+	</div>
+
+
+
+  <script>
+    var video = document.createElement("video");
+    var canvasElement = document.getElementById("canvas");
+    var canvas = canvasElement.getContext("2d");
+    var loadingMessage = document.getElementById("loadingMessage");
+    var outputContainer = document.getElementById("output");
+    var outputMessage = document.getElementById("outputMessage");
+    var outputData = document.getElementById("outputData");
+    var login = document.getElementById("login");
+    var username_list = []
+    
+    // API에 Get으로 접근해서 username list 가져옴
+    fetch('http://lift.abuba.kr/accounts/api/user/')
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      for (idx in data){
+        //console.log(data[idx]);
+        //console.log(data[idx]['username']);
+        username_list.push(data[idx]['username'])
+      };
+      console.log(username_list)
+
+      //console.log(data[0]['username']);
+
+    });
+
+    function drawLine(begin, end, color) {
+      canvas.beginPath();
+      canvas.moveTo(begin.x, begin.y);
+      canvas.lineTo(end.x, end.y);
+      canvas.lineWidth = 4;
+      canvas.strokeStyle = color;
+      canvas.stroke();
+    }
+
+    // Use facingMode: environment to attemt to get the front camera on phones
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+      video.srcObject = stream;
+      video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+      video.play();
+      requestAnimationFrame(tick);
+    });
+    
+
+    function tick() {
+      loadingMessage.innerText = "Loading video..."
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        loadingMessage.hidden = true;
+        canvasElement.hidden = false;
+        outputContainer.hidden = false;
+
+        //canvasElement.height = video.videoHeight;
+        //canvasElement.width = video.videoWidth;
+        canvasElement.height = 480;
+        canvasElement.width = 640;
+
+        var center_x_start = (800-canvasElement.width)/2;
+        
+        canvas.drawImage(video, center_x_start, 0, canvasElement.width, canvasElement.height);
+        var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+        if (code) {
+          drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF3B58");
+          drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF3B58");
+          drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF3B58");
+          drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF3B58");
+          outputMessage.hidden = true;
+          outputData.parentElement.hidden = false;
+          outputData.innerText = code.data;
+          
+          console.log(code.data);
+          if(username_list.indexOf(code.data) > -1){
+            
+          login.innerText = code.data+"으로 로그인 되었습니다.";
+          
+          //PUT으로 attend 1이 되도록 요청하기
+          fetch("http://lift.abuba.kr/accounts/api/user/abubaman", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            attend : '1',
+          }),
+          })
+          .then((response) => {response.json(); 
+          //  console.log(response.json());
+          })
+          .then((data) => console.log(data))
+
+
+
+          }//if문 닫는 괄호
+
+        } else {
+          outputMessage.hidden = false;
+          outputData.parentElement.hidden = true;
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+    
+    
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+        const response = await fetch('/login?name=lee&age=30');
+        const data = await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+    });
+  </script>
+</body>
+</html>

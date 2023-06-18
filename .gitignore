@@ -1,3 +1,5 @@
 static/
 run_files/olds/
+pushups_main/pushups/static/
+pushups_main/qr_code/static/
 my_settings.py
